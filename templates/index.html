@@ -1,0 +1,22 @@
+{# Hérédité : Cette page hérite de 'base_public.html' #}
+{% extends "base_public.html" %}
+
+{# Bloc pour le titre de la page #}
+{% block title %}Accueil{% endblock %}
+
+{# Bloc CSS : Spécifie le fichier CSS pour cette page #}
+{% block css %}{{ url_for('static', filename='css/style.css') }}{% endblock %} 
+
+{# Bloc Contenu : Le corps de la page d'accueil #}
+{% block content %}
+<div class="container">
+    <div class="logo">
+        <img src="{{ url_for('static', filename='logo/logo1.png') }}" alt="logo" id="logoid" />
+    </div>
+</div>
+
+{# Un lien (qui ressemble à un bouton) pour rediriger l'utilisateur vers la page de connexion #}
+<a href="{{ url_for('login') }}">
+    <button type="button" class="button">Commencer</button> 
+</a>
+{% endblock %}

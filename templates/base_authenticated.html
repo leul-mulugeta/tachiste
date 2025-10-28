@@ -1,0 +1,67 @@
+{# Hérédité : Ce template hérite de 'base_public.html' #}
+{% extends "base_public.html" %}
+
+{# Bloc CSS : Spécifie quel fichier CSS utiliser pour cette page (et celles qui en héritent) #}
+{% block css %}{{ url_for('static', filename='css/style3.css') }}{% endblock %}
+
+{# Bloc Contenu : Remplace le bloc 'content' vide de 'base_public.html' par toute la structure de l'application #}
+{% block content %}
+
+{# Header : La barre supérieure fixe qui contient le menu utilisateur #}
+<header class="main-header">
+    <div class="user-menu">
+        {# L'image utilisateur qui, au clic, appelle la fonction JavaScript 'toggleDropdown()' #}
+        <img src="{{ url_for('static', filename='user.png') }}" alt="Menu utilisateur" class="user-image"
+            onclick="toggleDropdown()" />
+        
+        {# Le menu déroulant, initialement caché (via CSS) #}
+        <div class="dropdown" id="dropdown">
+            {# 
+              Point Clé : 'current_user' est une variable globale fournie par Flask-Login.
+              Elle est disponible dans tous les templates sans avoir à la passer manuellement.
+              'current_user.username' affiche le nom de l'utilisateur connecté.
+            #}
+            <p class="dropdown-username">Connecté en tant que: <strong>{{ current_user.username }}</strong></p>
+            
+            {# Lien vers la route Flask '/logout' pour déconnecter l'utilisateur #}
+            <a href="{{ url_for('logout') }}" class="logout-btn">Se déconnecter</a>
+        </div>
+    </div>
+</header>
+
+{# Navigation : La barre latérale fixe (menu de gauche) #}
+<nav class="vertical-menu">
+    {# Lien vers le tableau de bord (Accueil) #}
+    {# 
+      Logique d'activation : La classe CSS 'active' est ajoutée à ce lien SI la variable 'active'
+      (que vous passez depuis votre route Flask, ex: active='dashboard') est égale à 'dashboard'.
+      C'est ce qui permet de surligner le lien de la page sur laquelle on se trouve.
+    #}
+    <a href="{{ url_for('dashboard') }}" class="logo-link {% if active=='dashboard' %}active{% endif %}">
+        <img src="{{ url_for('static', filename='home.png') }}" alt="Accueil" />
+        {# J'ai supprimé le texte 'Accueil' que j'avais ajouté, pour revenir à votre design original #}
+    </a>
+    
+    {# Les autres liens de navigation, utilisant la même logique d'activation #}
+    <a href="{{ url_for('today_tasks') }}" class="{% if active=='today' %}active{% endif %}">Mon Jour</a>
+    <a href="{{ url_for('important_tasks') }}" class="{% if active=='important' %}active{% endif %}">Important</a>
+    <a href="{{ url_for('tasks') }}" class="{% if active=='tasks' %}active{% endif %}">Tâches</a>
+    <a href="{{ url_for('completed_tasks') }}" class="{% if active=='completed' %}active{% endif %}">Fini</a>
+
+    {# Le logo en bas du menu de navigation #}
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='logo/logo1.png') }}" alt="Logo Tachiste" class="logo-img" />
+    </div>
+</nav>
+
+{# Contenu Principal : C'est la zone où le contenu des autres pages (Tâches, Important, etc.) sera injecté #}
+<main class="content-wrapper">
+    {# 
+      Ce bloc 'main' est la cible.
+      Par exemple, le contenu de 'all_tasks.html' (tout ce qui est dans son 'block main')
+      apparaîtra ici.
+    #}
+    {% block main %} {% endblock %}
+</main>
+
+{% endblock %} {# Fin du bloc 'content' #}

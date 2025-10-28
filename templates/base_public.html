@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        {# Configure l'affichage pour les appareils mobiles (essentiel pour le responsive design) #}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        {# Bloc de Titre (Jinja) : C'est un espace réservé. Les templates "enfants" (comme login.html ou base_authenticated.html)
+        définiront leur propre titre ici. '- Tachiste' sera ajouté à la fin de chaque titre de page. #}
+        <title>{% block title %}{% endblock %} - Tachiste</title>
+
+        {# Bloc CSS (Jinja) : Un espace réservé où les templates enfants spécifieront quel fichier CSS charger. #}
+        <link rel="stylesheet" href="{% block css %}{% endblock %}" />
+
+        {# Lien vers l'icône de l'onglet (favicon). 'url_for' est la manière correcte avec Flask de créer des liens vers des
+        fichiers statiques. #}
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo/logo.ico') }}" />
+
+        {# Lien vers le fichier JavaScript principal. L'attribut 'defer' indique au navigateur de télécharger le script en
+        parallèle et de ne l'exécuter qu'une fois le HTML de la page analysé. #}
+        <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    </head>
+    <body>
+        {# Bloc de Contenu (Jinja) : Tout le contenu visible des autres pages sera injecté à cet endroit. #} {% block content %}{%
+        endblock %}
+    </body>
+</html>

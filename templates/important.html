@@ -1,0 +1,67 @@
+{# Hérédité : Cette page hérite de 'base_authenticated.html' #}
+{% extends "base_authenticated.html" %}
+
+{# Bloc pour le titre de la page #}
+{% block title %}Important{% endblock %}
+
+{# Bloc principal où le contenu de la page est inséré #}
+{% block main %}
+<section class="tasks-container">
+    <h1>Tâches importantes</h1>
+
+    {# Liste des tâches #}
+    {% if important_tasks %}
+    <ul class="task-list">
+        {% for t in important_tasks %}
+        {# La classe 'task-favorite' est ajoutée pour le style (ex: bordure bleue) #}
+        <li class="task-item task-favorite">
+            
+            {# Contenu (checkbox, texte, date) #}
+            <div class="task-content">
+                {# Formulaire pour 'Terminer' la tâche #}
+                <form method="post" action="{{ url_for('toggle_task_completed') }}" class="task-form-toggle">
+                    <input type="hidden" name="task_id" value="{{ t.id }}" />
+                    <input type="checkbox" 
+                           aria-label="Marquer comme terminée"
+                           onchange="this.form.submit()" />
+                </form>
+                
+                {# Détails de la tâche #}
+                <div class="task-details">
+                    <span class="task-text">{{ t.task_name }}</span>
+                    {# Affiche la date de manière lisible, si elle existe #}
+                    {% if t.task_datetime %}
+                    <span class="task-date">{{ t.task_datetime.strftime('%d/%m %H:%M') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Actions (Important, Supprimer) #}
+            <div class="task-actions">
+                {# Formulaire pour 'Important' #}
+                {# L'image sera 'favorite2.png' (pleine) car toutes les tâches ici sont 'favorite' #}
+                <form method="post" action="{{ url_for('toggle_important_task') }}" class="task-form-favorite">
+                    <input type="hidden" name="task_id" value="{{ t.id }}" />
+                    <button type="submit" class="btn-icon" aria-label="Retirer des importants">
+                        <img src="{{ url_for('static', filename='favorite2.png') if t.favorite else url_for('static', filename='favorite1.png') }}"
+                             alt="Favori" width="30" height="30" />
+                    </button>
+                </form>
+
+                {# Formulaire pour 'Supprimer' #}
+                <form method="post" action="{{ url_for('delete_task') }}" class="task-form-delete">
+                    <input type="hidden" name="task_id" value="{{ t.id }}" />
+                    <button type="submit" class="btn-icon" aria-label="Supprimer la tâche">
+                        <img src="{{ url_for('static', filename='delete1.png') }}" alt="Supprimer" width="30" height="30" />
+                    </button>
+                </form>
+            </div>
+
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="no-tasks">Vous n'avez aucune tâche marquée comme importante.</p>
+    {% endif %}
+</section>
+{% endblock %}

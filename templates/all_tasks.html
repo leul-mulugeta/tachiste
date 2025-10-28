@@ -1,0 +1,84 @@
+{# Hérédité : Cette page hérite de 'base_authenticated.html' #}
+{% extends "base_authenticated.html" %}
+
+{# Bloc pour le titre de la page #}
+{% block title %}Tâches{% endblock %}
+
+{# Bloc principal où le contenu de la page est inséré #}
+{% block main %}
+<section class="tasks-container">
+    <h1>Tâches</h1>
+    
+    {# Formulaire pour ajouter une nouvelle tâche. Il envoie les données à la route 'tasks' en POST. #}
+    <form method="post" action="{{ url_for('tasks') }}" class="task-form-add">
+        <input type="text" id="task" placeholder="Entrez une nouvelle tâche" name="task" required />
+        <input type="datetime-local" id="schedule" name="schedule" aria-label="Date et heure de l'échéance" />
+        <button type="submit" class="btn-add">Ajouter</button>
+    </form>
+
+    {# Condition : Vérifie si la variable 'task' (passée depuis Flask) contient des tâches #}
+    {% if task %}
+    <ul class="task-list">
+        {# Boucle : Itère sur chaque objet 't' (tâche) dans la liste 'task' #}
+        {% for t in task %}
+        {# 
+          Chaque 'li' représente une tâche.
+          On ajoute conditionnellement la classe 'task-favorite' si la tâche est marquée comme importante.
+        #}
+        <li class="task-item {% if t.favorite %}task-favorite{% endif %}">
+            
+            {# Section gauche : Contenu de la tâche (checkbox, texte, date) #}
+            <div class="task-content">
+                {# Formulaire pour marquer la tâche comme 'terminée' ou 'non terminée' #}
+                <form method="post" action="{{ url_for('toggle_task_completed') }}" class="task-form-toggle">
+                    {# Champ caché pour envoyer l'ID de la tâche au serveur #}
+                    <input type="hidden" name="task_id" value="{{ t.id }}" />
+                    <input type="checkbox" 
+                           aria-label="Marquer comme terminée"
+                           {# JavaScript : Soumet le formulaire dès que la case est cochée/décochée #}
+                           onchange="this.form.submit()" />
+                </form>
+                
+                {# Détails textuels de la tâche #}
+                <div class="task-details">
+                    <span class="task-text">{{ t.task_name }}</span>
+                    {# Condition : Affiche la date seulement si elle existe (t.task_datetime n'est pas None) #}
+                    {% if t.task_datetime %}
+                    {# 'strftime' formate l'objet datetime en une chaîne lisible (ex: 28/10 14:30) #}
+                    <span class="task-date">{{ t.task_datetime.strftime('%d/%m %H:%M') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Section droite : Boutons d'action (important, supprimer) #}
+            <div class="task-actions">
+                {# Formulaire pour marquer la tâche comme 'importante' ou non #}
+                <form method="post" action="{{ url_for('toggle_important_task') }}" class="task-form-favorite">
+                    <input type="hidden" name="task_id" value="{{ t.id }}" />
+                    <button type="submit" class="btn-icon" aria-label="Marquer comme important">
+                        {# 
+                          Logique Jinja : Affiche 'favorite2.png' (pleine) SI t.favorite est True,
+                          SINON affiche 'favorite1.png' (vide).
+                        #}
+                        <img src="{{ url_for('static', filename='favorite2.png') if t.favorite else url_for('static', filename='favorite1.png') }}"
+                             alt="Favori" width="30" height="30" />
+                    </button>
+                </form>
+
+                {# Formulaire pour supprimer la tâche #}
+                <form method="post" action="{{ url_for('delete_task') }}" class="task-form-delete">
+                    <input type="hidden" name="task_id" value="{{ t.id }}" />
+                    <button type="submit" class="btn-icon" aria-label="Supprimer la tâche">
+                        <img src="{{ url_for('static', filename='delete1.png') }}" alt="Supprimer" width="30" height="30" />
+                    </button>
+                </form>
+            </div>
+
+        </li>
+        {% endfor %} {# Fin de la boucle 'for' #}
+    </ul>
+    {% else %} {# S'exécute si 'if task' est faux (la liste est vide) #}
+    <p class="no-tasks">Vous n'avez aucune tâche pour le moment.</p>
+    {% endif %} {# Fin de la condition 'if' #}
+</section>
+{% endblock %} {# Fin du bloc 'main' #}

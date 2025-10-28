@@ -1,0 +1,28 @@
+{# Hérédité : Cette page hérite de 'base_authenticated.html' #}
+{% extends "base_authenticated.html" %}
+
+{# Bloc pour le titre de la page #}
+{% block title %}Tableau de bord{% endblock %}
+
+{# Bloc principal où le contenu de la page est inséré #}
+{% block main %}
+
+{# Section pour le message de bienvenue #}
+<div class="welcome-message">
+    {# Affiche le nom de l'utilisateur. #}
+    <p>Bonjour, {{ current_user.username }}! Bienvenue sur Tachiste.</p>
+</div>
+
+{# Section pour le guide rapide de l'application #}
+<div class="tutorial-content">
+    <h2>Mini-tutoriel</h2>
+    <p>Voici une explication rapide des éléments du menu :</p>
+    <ul>
+        <li><strong>Mon jour :</strong> Voir les tâches pour aujourd'hui.</li>
+        <li><strong>Important :</strong> Les tâches marquées comme importantes.</li>
+        <li><strong>Tâches :</strong> Liste de toutes les tâches.</li>
+        <li><strong>Fini :</strong> Les tâches terminées.</li>
+    </ul>
+</div>
+{% endblock %}
+

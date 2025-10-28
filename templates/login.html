@@ -1,0 +1,61 @@
+{# Hérédité : Cette page hérite de 'base_public.html' #}
+{% extends "base_public.html" %} 
+
+{# Bloc pour le titre de la page #}
+{% block title %}Connexion{% endblock %} 
+
+{# Bloc CSS : Spécifie le fichier CSS pour cette page de connexion #}
+{% block css %}{{ url_for('static', filename='css/style2.css') }}{% endblock %} 
+
+{# Bloc Contenu : Le corps de la page de connexion #}
+{% block content %}
+<div class="square">
+    <img src="{{ url_for('static', filename='logo/logo1.png')}}" alt="logo" id="logoid" />
+    <h2>Se connecter</h2>
+    
+    {# Le formulaire de connexion. Il envoie les données en POST à la route actuelle (route 'login') #}
+    <form method="post" action="">
+        <div class="inputbox">
+            <input type="text" placeholder="Nom d'utilisateur" id="username" name="username" required />
+        </div>
+        <div class="inputbox">
+            <input type="password" placeholder="Mot de passe" id="password" name="password" required />
+            {# Section pour l'icône "afficher/cacher" le mot de passe (gérée par script.js) #}
+            <span class="show-password" id="show-password">
+                <img src="{{ url_for('static', filename='show.png') }}" alt="Show Password" id="show" style="display: none" />
+                <img src="{{ url_for('static', filename='hide.png') }}" alt="Hide Password" id="hide" />
+            </span>
+        </div>
+        
+        {# 
+          Bloc pour les messages Flash :
+          C'est ici que Flask affichera les messages d'erreur ou de succès.
+          (ex: "Le nom d'utilisateur ou le mot de passe n'est pas correct!")
+        #}
+        {% block flash_messages %} 
+          {# Récupère tous les messages flash avec leurs catégories (ex: 'error', 'success') #}
+          {% with messages = get_flashed_messages(with_categories=true) %} 
+            {% if messages %} 
+              {# Boucle sur chaque message #}
+              {% for category, msg in messages %} 
+                {# Affiche le message dans un 'div' avec une classe CSS basée sur la catégorie #}
+                {% if category == "error" %}
+                <div class="error">{{msg}}</div>
+                {% elif category == "success" %}
+                <div class="success">{{msg}}</div>
+                {% elif category == "info" %}
+                {# Celui-ci est utilisé par Flask-Login pour "Connectez-vous pour..." #}
+                <div class="info">{{msg}}</div>
+                {% endif %} 
+              {% endfor %} 
+            {% endif %} 
+          {% endwith %} 
+        {% endblock %}
+        
+        <button type="submit">Saisir</button>
+    </form>
+    
+    {# Lien pour rediriger les nouveaux utilisateurs vers la page d'inscription #}
+    <p>Pas de compte? <a href="{{ url_for('register') }}">Créez-en un!</a></p>
+</div>
+{% endblock %}
