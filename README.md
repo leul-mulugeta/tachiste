@@ -3,6 +3,8 @@
 ## 🛠️ Présentation
 Tachiste est une application web de gestionnaire de tâches (To-Do List) multi-utilisateurs et sécurisée. Développée avec le framework **Flask (Python)**, elle utilise **SQLAlchemy** pour assurer la persistance des données.
 
+**🌐 [Démo en ligne](https://tachiste.alwaysdata.net/)**
+
 ## 🚀 Fonctionnalités
 - **Authentification Sécurisée** : Système complet d'inscription, connexion et déconnexion.
 - **Hachage de Mots de Passe** : Les mots de passe des utilisateurs sont stockés de manière sécurisée grâce au hachage (via `Werkzeug`).

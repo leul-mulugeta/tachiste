@@ -15,16 +15,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 # --- Configuration de l'application Flask ---
 
-app = Flask(__name__)
+application = Flask(__name__)
 # Clé secrète pour sécuriser les sessions et les cookies
-app.config["SECRET_KEY"] = "QWERTY"
+application.config["SECRET_KEY"] = "QWERTY"
 # Chemin vers le fichier de base de données SQLite
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 # Désactive le suivi des modifications de SQLAlchemy (pour de meilleures performances)
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialise l'extension SQLAlchemy avec l'application Flask
-db = SQLAlchemy(app)
+db = SQLAlchemy(application)
 
 
 # --- Définition des modèles de base de données ---
@@ -68,13 +68,13 @@ class Task(db.Model):
         self.completed = False
 
 # Crée toutes les tables définies dans les modèles (si elles n'existent pas déjà)
-with app.app_context():
+with application.app_context():
     db.create_all()
 
 
 # --- Configuration de Flask-Login ---
 
-login_manager = LoginManager(app)
+login_manager = LoginManager(application)
 # Définit la route vers laquelle l'utilisateur est redirigé s'il essaie d'accéder
 # à une page protégée sans être connecté.
 login_manager.login_view = "login"
@@ -93,11 +93,11 @@ def load_user(user_id):
 
 # --- Routes principales (Authentification et Pages) ---
 
-@app.route("/")
+@application.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/login", methods=["GET", "POST"])
+@application.route("/login", methods=["GET", "POST"])
 def login():
     """Gère la connexion de l'utilisateur."""
     if request.method == "POST":
@@ -120,7 +120,7 @@ def login():
         )
     return render_template("login.html")
 
-@app.route("/register", methods=["GET", "POST"])
+@application.route("/register", methods=["GET", "POST"])
 def register():
     """Gère l'inscription d'un nouvel utilisateur."""
     if request.method == "POST":
@@ -153,7 +153,7 @@ def register():
             return redirect("login")
     return render_template("register.html")
 
-@app.route("/logout")
+@application.route("/logout")
 @login_required  # L'utilisateur doit être connecté pour se déconnecter
 def logout():
     """Déconnecte l'utilisateur."""
@@ -161,7 +161,7 @@ def logout():
     flash("Vous avez été déconnecté avec succès.", category="success")
     return redirect("login")
 
-@app.route("/dashboard")
+@application.route("/dashboard")
 @login_required
 def dashboard():
     """Tableau de bord principal (page d'accueil après connexion)."""
@@ -170,7 +170,7 @@ def dashboard():
 
 # --- Routes pour la gestion des tâches (CRUD) ---
 
-@app.route("/tasks", methods=["GET", "POST"])
+@application.route("/tasks", methods=["GET", "POST"])
 @login_required
 def tasks():
     """
@@ -207,7 +207,7 @@ def tasks():
 
     return render_template("all_tasks.html", task=not_completed_tasks, active="tasks")
 
-@app.route("/tasks/today")
+@application.route("/tasks/today")
 @login_required
 def today_tasks():
     """Affiche les tâches prévues pour aujourd'hui."""
@@ -225,7 +225,7 @@ def today_tasks():
 
     return render_template("today.html", today_tasks=today_tasks, formatted_date=formatted_date, active="today")
 
-@app.route("/tasks/important")
+@application.route("/tasks/important")
 @login_required
 def important_tasks():
     """Affiche les tâches marquées comme importantes."""
@@ -239,7 +239,7 @@ def important_tasks():
         "important.html", important_tasks=important_tasks, active="important"
     )
 
-@app.route("/tasks/completed")
+@application.route("/tasks/completed")
 @login_required
 def completed_tasks():
     """Affiche toutes les tâches terminées."""
@@ -252,7 +252,7 @@ def completed_tasks():
         "completed.html", completed_tasks=completed_tasks, active="completed"
     )
 
-@app.route("/delete_task", methods=["POST"])
+@application.route("/delete_task", methods=["POST"])
 @login_required
 def delete_task():
     """Supprime une tâche."""
@@ -267,7 +267,7 @@ def delete_task():
     # Redirige l'utilisateur vers la page d'où il vient (ex: /tasks ou /tasks/today)
     return redirect(request.referrer or url_for("tasks"))
 
-@app.route("/toggle_important_task", methods=["POST"])
+@application.route("/toggle_important_task", methods=["POST"])
 @login_required
 def toggle_important_task():
     task_id = int(request.form.get("task_id"))
@@ -281,7 +281,7 @@ def toggle_important_task():
 
     return redirect(request.referrer or url_for("tasks"))
 
-@app.route("/toggle_task_completed", methods=["POST"])
+@application.route("/toggle_task_completed", methods=["POST"])
 @login_required
 def toggle_task_completed():
     task_id = int(request.form.get("task_id"))
@@ -297,4 +297,4 @@ def toggle_task_completed():
 
 if __name__ == "__main__":
     # Lance le serveur de développement Flask
-    app.run(debug=True)
+    application.run(debug=True)
