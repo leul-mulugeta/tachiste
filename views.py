@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_login import (
@@ -16,10 +17,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # --- Configuration de l'application Flask ---
 
 application = Flask(__name__)
+# On définit le chemin absolu du dossier racine de l'application
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 # Clé secrète pour sécuriser les sessions et les cookies
-application.config["SECRET_KEY"] = "QWERTY"
+# On utilise une variable d'environnement pour la sécurité, avec une valeur par défaut pour le développement local
+application.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-local")
 # Chemin vers le fichier de base de données SQLite
-application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "instance", "database.db")
 # Désactive le suivi des modifications de SQLAlchemy (pour de meilleures performances)
 application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -75,6 +80,8 @@ with application.app_context():
 # --- Configuration de Flask-Login ---
 
 login_manager = LoginManager(application)
+# Protection renforcée contre le vol de session
+login_manager.session_protection = "strong"
 # Définit la route vers laquelle l'utilisateur est redirigé s'il essaie d'accéder
 # à une page protégée sans être connecté.
 login_manager.login_view = "login"
@@ -100,9 +107,16 @@ def index():
 @application.route("/login", methods=["GET", "POST"])
 def login():
     """Gère la connexion de l'utilisateur."""
+    # Si l'utilisateur est déjà connecté, on le redirige vers le tableau de bord
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+        
+        # Récupère si la case "Rester connecté" est cochée
+        remember = True if request.form.get("remember") else False
 
         # 1. Trouve l'utilisateur par son nom d'utilisateur
         found_user = Users.query.filter_by(username=username).first()
@@ -110,8 +124,8 @@ def login():
         # 2. Vérifie si l'utilisateur existe ET si le mot de passe fourni
         #    correspond au mot de passe haché dans la base de données.
         if found_user and check_password_hash(found_user.password, password):
-            # Enregistre l'utilisateur comme étant connecté
-            login_user(found_user)
+            # Enregistre l'utilisateur comme étant connecté avec l'option "remember"
+            login_user(found_user, remember=remember)
             # Redirige vers le tableau de bord
             return redirect(url_for("dashboard"))
         flash(
@@ -123,6 +137,10 @@ def login():
 @application.route("/register", methods=["GET", "POST"])
 def register():
     """Gère l'inscription d'un nouvel utilisateur."""
+    # Si l'utilisateur est déjà connecté, on le redirige vers le tableau de bord
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
@@ -297,4 +315,4 @@ def toggle_task_completed():
 
 if __name__ == "__main__":
     # Lance le serveur de développement Flask
-    application.run(debug=True)
+    application.run(host='0.0.0.0', debug=True)

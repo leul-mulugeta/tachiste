@@ -30,6 +30,20 @@ Tachiste est une application web de gestionnaire de tâches (To-Do List) multi-u
 
 ## ⚙️ Installation et Exécution
 
+### 🐳 Méthode rapide avec Docker (Recommandé)
+
+Si vous avez Docker et Docker Compose installés, vous pouvez lancer l'application en une seule commande :
+
+```sh
+docker compose up --build
+```
+
+L'application sera accessible à l'adresse `http://127.0.0.1:5000`. Vos données seront sauvegardées dans le dossier `instance/` à la racine de votre projet.
+
+---
+
+### 💻 Installation manuelle
+
 Avant de commencer, assurez-vous d'avoir **Python 3** et **pip** installés sur votre machine.
 
 1.  **Clonez le dépôt** (ou téléchargez les fichiers) :

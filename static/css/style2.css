@@ -69,6 +69,24 @@ p a:hover {
     text-decoration: underline;
 }
 
+.remember-me {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.remember-me input {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.remember-me label {
+    cursor: pointer;
+}
+
 .show-password {
     position: absolute;
     right: 10px;
